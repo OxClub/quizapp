@@ -69,7 +69,7 @@ public class ResultActivity extends Activity {
                 new AdRequest.Builder().build(),
                 new InterstitialAdLoadCallback() {
                     @Override public void onAdLoaded(InterstitialAd ad) { interstitial = ad; }
-                    @Override public void onAdFailedToLoad(AdError e) { interstitial = null; }
+                    @Override public void onAdFailedToLoad(com.google.android.gms.ads.LoadAdError e) { interstitial = null; }
                 });
     }
 }
