@@ -18,6 +18,7 @@ import java.util.List;
 public class QuizActivity extends Activity {
 
     private List<QuestionBank.Question> questions;
+    private String source = "";
     private int index = 0;
     private int score = 0;
     private boolean answered = false;
@@ -34,8 +35,6 @@ public class QuizActivity extends Activity {
         AdView adView = findViewById(R.id.adView);
         adView.loadAd(new AdRequest.Builder().build());
 
-        questions = QuestionBank.getQuiz(10);
-
         tvQuestion = findViewById(R.id.tvQuestion);
         tvProgress = findViewById(R.id.tvProgress);
         tvScore = findViewById(R.id.tvScore);
@@ -50,7 +49,19 @@ public class QuizActivity extends Activity {
             options[i].setOnClickListener(v -> answer(choice));
         }
 
-        showQuestion();
+        loadQuestions();
+    }
+
+    private void loadQuestions() {
+        tvQuestion.setText("Loading questions...");
+        for (Button b : options) b.setEnabled(false);
+
+        QuestionBank.loadQuiz(10, (qs, src) -> {
+            questions = qs;
+            source = src == null ? "" : src;
+            for (Button b : options) b.setEnabled(true);
+            showQuestion();
+        });
     }
 
     private void showQuestion() {
@@ -58,7 +69,7 @@ public class QuizActivity extends Activity {
         QuestionBank.Question q = questions.get(index);
 
         tvQuestion.setText(q.text);
-        tvProgress.setText("Question " + (index + 1) + " / " + questions.size());
+        tvProgress.setText("Q " + (index + 1) + "/" + questions.size());
         tvScore.setText("Score: " + score);
 
         for (int i = 0; i < 4; i++) {
@@ -92,6 +103,7 @@ public class QuizActivity extends Activity {
                 Intent i = new Intent(this, ResultActivity.class);
                 i.putExtra("score", score);
                 i.putExtra("total", questions.size());
+                i.putExtra("source", source);
                 startActivity(i);
                 finish();
             }

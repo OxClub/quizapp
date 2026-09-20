@@ -28,6 +28,7 @@ public class ResultActivity extends Activity {
 
         int score = getIntent().getIntExtra("score", 0);
         int total = getIntent().getIntExtra("total", 10);
+        String source = getIntent().getStringExtra("source");
 
         ((TextView) findViewById(R.id.tvResult)).setText(score + " / " + total);
 
@@ -36,6 +37,10 @@ public class ResultActivity extends Activity {
         if (percent >= 80) msg.setText("🏆 Amazing! Quiz master!");
         else if (percent >= 50) msg.setText("👍 Good job! Keep going!");
         else msg.setText("💪 Don't give up - try again!");
+
+        if (source != null && !source.isEmpty()) {
+            msg.setText(msg.getText().toString() + "\n" + source);
+        }
 
         findViewById(R.id.btnAgain).setOnClickListener(v -> {
             Intent i = new Intent(this, QuizActivity.class);
