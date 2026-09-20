@@ -1,49 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/bg"
-    android:padding="24dp">
+    android:fillViewport="true"
+    android:background="@color/bg">
 
-    <Space android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/app_name"
-        android:textSize="46sp"
-        android:textStyle="bold"
-        android:textColor="@color/accent" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Test your knowledge - 10 questions!"
-        android:textSize="16sp"
-        android:textColor="@color/text"
-        android:layout_marginTop="10dp" />
-
-    <Button
-        android:id="@+id/btnStart"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="START QUIZ"
-        android:textSize="18sp"
-        android:textColor="@color/white"
-        android:background="@drawable/bg_button"
-        android:layout_marginTop="40dp"
-        android:padding="16dp" />
+        android:orientation="vertical"
+        android:padding="20dp">
 
-    <Space android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="🧠 OxQuiz"
+            android:textSize="44sp"
+            android:textStyle="bold"
+            android:textColor="@color/accent" />
 
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/adView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/tvLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="6dp"
+            android:textSize="14sp"
+            android:textColor="@color/text" />
+
+        <TextView
+            android:id="@+id/tvHigh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="2dp"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="@color/text" />
+
+        <TextView
+            android:id="@+id/tvHints"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="13sp"
+            android:textColor="@color/text" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp">
+
+            <Button
+                android:id="@+id/btnTheme"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="13sp"
+                android:textAllCaps="false"
+                android:textColor="@color/dark"
+                android:background="@drawable/bg_option" />
+
+            <Space android:layout_width="8dp" android:layout_height="1dp"/>
+
+            <Button
+                android:id="@+id/btnSound"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="13sp"
+                android:textAllCaps="false"
+                android:textColor="@color/dark"
+                android:background="@drawable/bg_option" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="📂 Choose topic:"
+            android:textSize="14sp"
+            android:textColor="@color/text" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp">
+
+            <Button android:id="@+id/btnCat0" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="4dp" android:textSize="12sp" android:textAllCaps="false" android:padding="10dp" android:textColor="@color/dark" android:background="@drawable/bg_option"/>
+            <Button android:id="@+id/btnCat1" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="4dp" android:layout_marginStart="4dp" android:textSize="12sp" android:textAllCaps="false" android:padding="10dp" android:textColor="@color/dark" android:background="@drawable/bg_option"/>
+            <Button android:id="@+id/btnCat2" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="4dp" android:textSize="12sp" android:textAllCaps="false" android:padding="10dp" android:textColor="@color/dark" android:background="@drawable/bg_option"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <Button android:id="@+id/btnCat3" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="4dp" android:textSize="12sp" android:textAllCaps="false" android:padding="10dp" android:textColor="@color/dark" android:background="@drawable/bg_option"/>
+            <Button android:id="@+id/btnCat4" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="4dp" android:layout_marginStart="4dp" android:textSize="12sp" android:textAllCaps="false" android:padding="10dp" android:textColor="@color/dark" android:background="@drawable/bg_option"/>
+            <Button android:id="@+id/btnCat5" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="4dp" android:textSize="12sp" android:textAllCaps="false" android:padding="10dp" android:textColor="@color/dark" android:background="@drawable/bg_option"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="🎚️ Difficulty:"
+            android:textSize="14sp"
+            android:textColor="@color/text" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp">
+
+            <Button android:id="@+id/btnEasy" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="4dp" android:text="Easy" android:textSize="13sp" android:textAllCaps="false" android:textColor="@color/dark" android:background="@drawable/bg_option"/>
+            <Button android:id="@+id/btnMedium" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="4dp" android:layout_marginStart="4dp" android:text="Medium" android:textSize="13sp" android:textAllCaps="false" android:textColor="@color/dark" android:background="@drawable/bg_option"/>
+            <Button android:id="@+id/btnHard" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="4dp" android:text="Hard" android:textSize="13sp" android:textAllCaps="false" android:textColor="@color/dark" android:background="@drawable/bg_option"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="START QUIZ"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_button"
+            android:padding="16dp" />
+
+        <Button
+            android:id="@+id/btnShare"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="📤 Share with friends"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:textColor="@color/dark"
+            android:background="@drawable/bg_option"
+            android:padding="12dp" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:minHeight="20dp"/>
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/adView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            ads:adSize="BANNER"
+            ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
+    </LinearLayout>
+</ScrollView>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -20,22 +21,68 @@
         android:id="@+id/tvMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
+        android:gravity="center"
+        android:textSize="17sp"
         android:textColor="@color/text"
-        android:layout_marginTop="12dp" />
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/tvXP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/accent" />
+
+    <TextView
+        android:id="@+id/tvHigh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textSize="14sp"
+        android:textColor="@color/text" />
 
     <Button
         android:id="@+id/btnAgain"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
         android:text="PLAY AGAIN"
-        android:textSize="18sp"
+        android:textSize="17sp"
         android:textColor="@color/white"
         android:background="@drawable/bg_button"
-        android:layout_marginTop="40dp"
-        android:padding="16dp" />
+        android:padding="15dp" />
 
-    <Space android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"/>
+    <Button
+        android:id="@+id/btnShare"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="📤 Share my score"
+        android:textSize="15sp"
+        android:textAllCaps="false"
+        android:textColor="@color/dark"
+        android:background="@drawable/bg_option"
+        android:padding="12dp" />
+
+    <Button
+        android:id="@+id/btnMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="🏠 Main menu"
+        android:textSize="15sp"
+        android:textAllCaps="false"
+        android:textColor="@color/dark"
+        android:background="@drawable/bg_option"
+        android:padding="12dp" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:minHeight="10dp"/>
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
