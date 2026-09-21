@@ -12,6 +12,34 @@ jobs:
       - name: Get code
         uses: actions/checkout@v4
 
+      - name: Check AdMob secrets
+        env:
+          A1: ${{ secrets.ADMOB_APP_ID }}
+          A2: ${{ secrets.ADMOB_BANNER_ID }}
+          A3: ${{ secrets.ADMOB_INTERSTITIAL_ID }}
+          A4: ${{ secrets.ADMOB_REWARDED_ID }}
+        run: |
+          for v in "$A1" "$A2" "$A3" "$A4"; do
+            if [ -z "$v" ]; then
+              echo "❌ Missing an AdMob secret! Add all 4 in Settings → Secrets"
+              exit 1
+            fi
+          done
+          echo "✅ All 4 secrets found"
+
+      - name: Inject AdMob IDs (secret vault only)
+        env:
+          APP_ID: ${{ secrets.ADMOB_APP_ID }}
+          BANNER: ${{ secrets.ADMOB_BANNER_ID }}
+          INTER: ${{ secrets.ADMOB_INTERSTITIAL_ID }}
+          REWARD: ${{ secrets.ADMOB_REWARDED_ID }}
+        run: |
+          sed -i "s|ca-app-pub-3940256099942544~3347511713|$APP_ID|" app/src/main/AndroidManifest.xml
+          sed -i "s|ca-app-pub-3940256099942544/6300978111|$BANNER|g" app/src/main/res/layout/activity_main.xml app/src/main/res/layout/activity_quiz.xml app/src/main/res/layout/activity_result.xml
+          sed -i "s|ca-app-pub-3940256099942544/1033173712|$INTER|" app/src/main/java/com/oxclub/quizapp/ResultActivity.java
+          sed -i "s|ca-app-pub-3940256099942544/5224354917|$REWARD|" app/src/main/java/com/oxclub/quizapp/QuizActivity.java
+          echo "✅ Your real IDs injected — they exist only inside this build"
+
       - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
