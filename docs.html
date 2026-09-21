@@ -1,0 +1,10 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -e
+cd ~/quizapp
+mkdir -p docs
+mv docs.html docs/index.html
+git add .
+git commit -m "Add privacy policy page"
+git push
+echo ""
+echo "✅ Pushed! Now enable Pages (see next steps)"
