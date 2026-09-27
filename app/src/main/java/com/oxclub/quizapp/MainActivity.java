@@ -13,7 +13,7 @@ import com.google.android.gms.ads.MobileAds;
 
 public class MainActivity extends Activity {
 
-    private final Button[] catButtons = new Button[6];
+    private final Button[] catButtons = new Button[12];
     private final Button[] diffButtons = new Button[3];
     private final String[] DIFF_NAMES = {"easy", "medium", "hard"};
     private TextView tvLevel, tvHigh, tvHints;
@@ -33,15 +33,13 @@ public class MainActivity extends Activity {
         btnTheme = findViewById(R.id.btnTheme);
         btnSound = findViewById(R.id.btnSound);
 
-        catButtons[0] = findViewById(R.id.btnCat0);
-        catButtons[1] = findViewById(R.id.btnCat1);
-        catButtons[2] = findViewById(R.id.btnCat2);
-        catButtons[3] = findViewById(R.id.btnCat3);
-        catButtons[4] = findViewById(R.id.btnCat4);
-        catButtons[5] = findViewById(R.id.btnCat5);
+        int[] catIds = {R.id.btnCat0, R.id.btnCat1, R.id.btnCat2, R.id.btnCat3,
+                R.id.btnCat4, R.id.btnCat5, R.id.btnCat6, R.id.btnCat7,
+                R.id.btnCat8, R.id.btnCat9, R.id.btnCat10, R.id.btnCat11};
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 12; i++) {
             final int idx = i;
+            catButtons[i] = findViewById(catIds[i]);
             catButtons[i].setText(QuestionBank.CAT_NAMES[i]);
             catButtons[i].setOnClickListener(v -> {
                 Prefs.setCategory(this, idx);
@@ -77,7 +75,7 @@ public class MainActivity extends Activity {
         findViewById(R.id.btnShare).setOnClickListener(v -> {
             Intent s = new Intent(Intent.ACTION_SEND);
             s.setType("text/plain");
-            s.putExtra(Intent.EXTRA_TEXT, "🧠 I'm playing OxQuiz — my best score is "
+            s.putExtra(Intent.EXTRA_TEXT, "🧠 I'm playing OxQuiz — 12 categories including Physics, Chemistry, Biology and Olympiad mode! My best: "
                     + Prefs.getHighScore(this) + "/10. Can you beat me? 🔥");
             startActivity(Intent.createChooser(s, "Share OxQuiz"));
         });
@@ -104,7 +102,7 @@ public class MainActivity extends Activity {
 
     private void styleCats() {
         int sel = Prefs.getCategory(this);
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 12; i++)
             catButtons[i].setBackgroundResource(
                     i == sel ? R.drawable.bg_cat_selected : R.drawable.bg_option);
     }

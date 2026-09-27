@@ -1,34 +1,32 @@
 package com.oxclub.quizapp;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Html;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
-import java.util.Set;
 
 public class QuestionBank {
 
     public static final String[] CAT_NAMES = {
-            "All 🌍", "Science 🧪", "Sports ⚽", "Movies 🎬", "History 🏛️", "Geo 🗺️"
+            "All 🌍", "Physics ⚛️", "Chemistry 🧪", "Biology 🧬", "Maths 📐", "Science 🔬",
+            "Sports ⚽", "Movies 🎬", "History 🏛️", "Geo 🗺️", "GK 🧠", "Olympiad 🏅"
     };
-    public static final int[] CAT_IDS = {0, 17, 21, 11, 23, 22};
 
     public static class Question {
         public final String text;
         public final String[] options;
         public final int correct;
+        public String category;
+        public int difficulty = 1;
 
         public Question(String text, String[] options, int correct) {
             this.text = text;
@@ -42,110 +40,104 @@ public class QuestionBank {
     }
 
     public static void loadQuiz(int count, int categoryIndex, String difficulty, Callback callback) {
-        fetchFromApi(count, CAT_IDS[categoryIndex], difficulty, (questions, source) -> {
-            if (questions != null && questions.size() > 0) {
-                callback.onReady(questions, source);
-            } else {
-                callback.onReady(makeMathQuiz(count, difficulty), "Math Mode (offline) 🔢");
+        List<Question> qs = pickLocal(count, categoryIndex, difficulty);
+        deliver(callback, qs, "Quiz Mode 🧠");
+    }
+
+    private static void deliver(Callback cb, List<Question> qs, String src) {
+        new Handler(Looper.getMainLooper()).post(() -> cb.onReady(qs, src));
+    }
+
+    private static List<Question> pickLocal(int count, int categoryIndex, String difficulty) {
+        List<Question> all = loadLocalBank();
+        List<Question> pool = new ArrayList<>();
+
+        if (categoryIndex > 0) {
+            String want = CAT_NAMES[categoryIndex].split(" ")[0];
+            for (Question q : all) {
+                if (want.equalsIgnoreCase(q.category)) pool.add(q);
             }
-        });
+        } else {
+            pool.addAll(all);
+        }
+
+        List<Question> filtered = new ArrayList<>();
+        for (Question q : pool) {
+            if ("easy".equals(difficulty) && q.difficulty <= 1) filtered.add(q);
+            else if ("hard".equals(difficulty) && q.difficulty >= 1) filtered.add(q);
+            else filtered.add(q);
+        }
+        if (filtered.size() >= count) pool = filtered;
+
+        Collections.shuffle(pool);
+        List<Question> out = new ArrayList<>();
+        for (int i = 0; i < Math.min(count, pool.size()); i++) out.add(pool.get(i));
+        while (out.size() < count) out.add(makeMathQuestion(difficulty));
+        return out;
     }
 
-    private static void fetchFromApi(int count, int catId, String difficulty, Callback callback) {
-        new Thread(() -> {
-            try {
-                StringBuilder u = new StringBuilder("https://opentdb.com/api.php?amount=")
-                        .append(count).append("&type=multiple");
-                if (catId > 0) u.append("&category=").append(catId);
-                u.append("&difficulty=").append(difficulty);
-
-                HttpURLConnection conn = (HttpURLConnection) new URL(u.toString()).openConnection();
-                conn.setConnectTimeout(8000);
-                conn.setReadTimeout(8000);
-
-                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) sb.append(line);
-                reader.close();
-
-                JSONArray results = new JSONObject(sb.toString()).getJSONArray("results");
-                List<Question> list = new ArrayList<>();
-
-                for (int i = 0; i < results.length(); i++) {
-                    JSONObject o = results.getJSONObject(i);
-                    String text = decode(o.getString("question"));
-                    String correct = decode(o.getString("correct_answer"));
-                    JSONArray wrong = o.getJSONArray("incorrect_answers");
-
-                    List<String> opts = new ArrayList<>();
-                    opts.add(correct);
-                    for (int j = 0; j < wrong.length(); j++) opts.add(decode(wrong.getString(j)));
-                    Collections.shuffle(opts);
-                    list.add(new Question(text, opts.toArray(new String[0]), opts.indexOf(correct)));
-                }
-
-                new Handler(Looper.getMainLooper()).post(() ->
-                        callback.onReady(list, "Online Questions 🌍"));
-
-            } catch (Exception e) {
-                new Handler(Looper.getMainLooper()).post(() -> callback.onReady(null, null));
-            }
-        }).start();
-    }
-
-    private static String decode(String s) {
-        return Html.fromHtml(s, Html.FROM_HTML_MODE_LEGACY).toString().trim();
-    }
-
-    // ---------- MATH GENERATOR ----------
-
-    private static List<Question> makeMathQuiz(int count, String difficulty) {
+    private static List<Question> loadLocalBank() {
         List<Question> list = new ArrayList<>();
-        for (int i = 0; i < count; i++) list.add(makeMathQuestion(difficulty));
+        try {
+            Context ctx = AppCtx.get();
+            InputStream is = ctx.getAssets().open("questions.json");
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            byte[] buf = new byte[8192];
+            int n;
+            while ((n = is.read(buf)) > 0) bos.write(buf, 0, n);
+            is.close();
+
+            JSONArray arr = new JSONArray(bos.toString("UTF-8"));
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject o = arr.getJSONObject(i);
+                JSONArray opts = o.getJSONArray("o");
+                String[] raw = new String[opts.length()];
+                for (int j = 0; j < opts.length(); j++) raw[j] = opts.getString(j);
+
+                List<String> shuffled = new ArrayList<>(Arrays.asList(raw));
+                Collections.shuffle(shuffled);
+                int correct = shuffled.indexOf(raw[o.getInt("a")]);
+
+                Question q = new Question(o.getString("q"),
+                        shuffled.toArray(new String[0]), correct);
+                q.category = o.optString("c", "GK");
+                q.difficulty = o.optInt("d", 1);
+                list.add(q);
+            }
+        } catch (Exception ignored) {}
         return list;
     }
 
     private static Question makeMathQuestion(String diff) {
-        Random rnd = new Random();
+        java.util.Random rnd = new java.util.Random();
         boolean easy = "easy".equals(diff);
         boolean hard = "hard".equals(diff);
         int type = rnd.nextInt(4);
         int a, b, answer;
         String text;
-
         switch (type) {
             case 0:
                 if (easy) { a = 2 + rnd.nextInt(18); b = 2 + rnd.nextInt(18); }
                 else if (hard) { a = 150 + rnd.nextInt(400); b = 150 + rnd.nextInt(400); }
                 else { a = 10 + rnd.nextInt(90); b = 10 + rnd.nextInt(90); }
-                answer = a + b;
-                text = a + " + " + b + " = ?";
-                break;
+                answer = a + b; text = a + " + " + b + " = ?"; break;
             case 1:
                 if (easy) { a = 10 + rnd.nextInt(18); b = 2 + rnd.nextInt(9); }
                 else if (hard) { a = 300 + rnd.nextInt(400); b = 100 + rnd.nextInt(250); }
                 else { a = 40 + rnd.nextInt(90); b = 10 + rnd.nextInt(35); }
-                answer = a - b;
-                text = a + " − " + b + " = ?";
-                break;
+                answer = a - b; text = a + " − " + b + " = ?"; break;
             case 2:
                 if (easy) { a = 2 + rnd.nextInt(6); b = 2 + rnd.nextInt(6); }
                 else if (hard) { a = 12 + rnd.nextInt(20); b = 12 + rnd.nextInt(20); }
                 else { a = 2 + rnd.nextInt(11); b = 2 + rnd.nextInt(11); }
-                answer = a * b;
-                text = a + " × " + b + " = ?";
-                break;
+                answer = a * b; text = a + " × " + b + " = ?"; break;
             default:
                 if (easy) { b = 2 + rnd.nextInt(5); answer = 2 + rnd.nextInt(6); }
                 else if (hard) { b = 6 + rnd.nextInt(12); answer = 4 + rnd.nextInt(15); }
                 else { b = 2 + rnd.nextInt(11); answer = 2 + rnd.nextInt(11); }
-                a = b * answer;
-                text = a + " ÷ " + b + " = ?";
-                break;
+                a = b * answer; text = a + " ÷ " + b + " = ?"; break;
         }
-
-        Set<Integer> opts = new HashSet<>();
+        java.util.Set<Integer> opts = new java.util.HashSet<>();
         opts.add(answer);
         while (opts.size() < 4) {
             int cand = answer + (rnd.nextInt(11) - 5);
@@ -153,10 +145,8 @@ public class QuestionBank {
         }
         List<Integer> optList = new ArrayList<>(opts);
         Collections.shuffle(optList);
-
         String[] arr = new String[4];
         for (int i = 0; i < 4; i++) arr[i] = String.valueOf(optList.get(i));
-
         return new Question(text, arr, optList.indexOf(answer));
     }
 }
